@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Koki Admin Dashboard</title>
+
+<style>
+body{
+  font-family: Arial;
+  background: #f5f5f5;
+  padding: 10px;
+}
+
+h1{
+  text-align:center;
+  color:#e65100;
+}
+
+.order{
+  background:white;
+  margin:15px 0;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+}
+
+.total{
+  color:green;
+  font-weight:bold;
+}
+
+.time{
+  color:gray;
+  font-size:14px;
+}
+
+.item{
+  margin-left:15px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>👨‍💼 Koki Admin Dashboard</h1>
+
+<div id="orders"></div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getDatabase,
+  ref,
+  onValue
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* REPLACE WITH YOUR FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyCtfN07wHJaja2Sofz59qCdZ7nWFbiOWqE",
+  authDomain: "koki-mzboot-zbta.firebaseapp.com",
+  databaseURL: "https://koki-mzboot-zbta-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "koki-mzboot-zbta",
+  storageBucket: "koki-mzboot-zbta.firebasestorage.app",
+  messagingSenderId: "912505103789",
+  appId: "1:912505103789:web:bc220a363b7603c1c96d24"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const ordersRef = ref(db, "orders");
+
+onValue(ordersRef, (snapshot) => {
+
+  const data = snapshot.val();
+
+  const ordersDiv = document.getElementById("orders");
+
+  ordersDiv.innerHTML = "";
+
+  if(!data){
+    ordersDiv.innerHTML = "<h3>No Orders Yet</h3>";
+    return;
+  }
+
+  Object.values(data).reverse().forEach(order => {
+
+    let itemsHtml = "";
+
+    order.items.forEach(item => {
+      itemsHtml += `
+        <div class="item">
+          🍔 ${item.item} - ${item.price} EGP
+        </div>
+      `;
+    });
+
+    ordersDiv.innerHTML += `
+      <div class="order">
+
+        <h2>🛒 New Order</h2>
+
+        ${itemsHtml}
+
+        <p class="total">
+          Total: ${order.total} EGP
+        </p>
+
+        <p>
+          Items Count: ${order.itemCount}
+        </p>
+
+        <p class="time">
+          🕒 ${order.time}
+        </p>
+
+      </div>
+    `;
+  });
+
+});
+
+</script>
+
+</body>
+</html>
