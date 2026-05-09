@@ -86,12 +86,23 @@ const db = getDatabase(app);
 
 const ordersRef = ref(db, "orders");
 
+/* CLEAR ALL ORDERS */
 window.clearOrders = function(){
 
   let confirmClear = confirm("Delete all orders?");
 
   if(confirmClear){
     remove(ordersRef);
+  }
+}
+
+/* DELETE SINGLE ORDER */
+window.deleteOrder = function(orderId){
+
+  let confirmDelete = confirm("Delete this order?");
+
+  if(confirmDelete){
+    remove(ref(db, "orders/" + orderId));
   }
 }
 
@@ -108,7 +119,7 @@ onValue(ordersRef, (snapshot) => {
     return;
   }
 
-  Object.values(data).reverse().forEach(order => {
+  Object.entries(data).reverse().forEach(([orderId, order]) => {
 
     let itemsHtml = "";
 
@@ -123,7 +134,22 @@ onValue(ordersRef, (snapshot) => {
     ordersDiv.innerHTML += `
       <div class="order">
 
-        <h2>🛒 New Order</h2>
+        <h2>
+          🛒 New Order
+
+          <button onclick="deleteOrder('${orderId}')" style="
+          background:red;
+          color:white;
+          border:none;
+          padding:6px 10px;
+          border-radius:6px;
+          float:right;
+          cursor:pointer;
+          ">
+          ❌ Delete
+          </button>
+
+        </h2>
 
         ${itemsHtml}
 
