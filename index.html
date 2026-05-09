@@ -59,6 +59,44 @@ cursor:pointer;
 
 <div id="orders"></div>
 
+<!-- CHAT BOX -->
+<div style="
+background:white;
+padding:15px;
+border-radius:12px;
+margin-top:20px;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+">
+
+<h2>💬 Admin Chat</h2>
+
+<div id="chatBox" style="
+height:200px;
+overflow-y:auto;
+border:1px solid #ccc;
+padding:10px;
+margin-bottom:10px;
+text-align:left;
+background:#fafafa;
+"></div>
+
+<input id="chatInput" type="text" placeholder="Type message..." style="
+width:70%;
+padding:10px;
+">
+
+<button onclick="sendMessage()" style="
+padding:10px;
+background:#4caf50;
+color:white;
+border:none;
+border-radius:6px;
+">
+Send
+</button>
+
+</div>
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -67,7 +105,8 @@ import {
   getDatabase,
   ref,
   onValue,
-  remove
+  remove,
+  push
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 /* FIREBASE CONFIG */
@@ -85,6 +124,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const ordersRef = ref(db, "orders");
+const chatRef = ref(db, "chat");
 
 /* CLEAR ALL ORDERS */
 window.clearOrders = function(){
@@ -106,6 +146,25 @@ window.deleteOrder = function(orderId){
   }
 }
 
+/* SEND CHAT MESSAGE */
+window.sendMessage = function(){
+
+  const input = document.getElementById("chatInput");
+
+  const text = input.value.trim();
+
+  if(text === "") return;
+
+  push(chatRef, {
+    sender: "Admin",
+    text: text,
+    time: new Date().toLocaleTimeString()
+  });
+
+  input.value = "";
+}
+
+/* LIVE ORDERS */
 onValue(ordersRef, (snapshot) => {
 
   const data = snapshot.val();
@@ -169,6 +228,32 @@ onValue(ordersRef, (snapshot) => {
     `;
   });
 
+});
+
+/* LIVE CHAT */
+onValue(chatRef, (snapshot) => {
+
+  const data = snapshot.val();
+
+  const chatBox = document.getElementById("chatBox");
+
+  chatBox.innerHTML = "";
+
+  if(!data) return;
+
+  Object.values(data).forEach(msg => {
+
+    chatBox.innerHTML += `
+      <div style="margin-bottom:10px;">
+        <b>${msg.sender}</b>: ${msg.text}
+        <div style="font-size:12px;color:gray;">
+          ${msg.time}
+        </div>
+      </div>
+    `;
+  });
+
+  chatBox.scrollTop = chatBox.scrollHeight;
 });
 
 </script>
