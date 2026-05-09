@@ -70,6 +70,18 @@ box-shadow:0 2px 8px rgba(0,0,0,0.2);
 
 <h2>💬 Admin Chat</h2>
 
+<button onclick="clearChat()" style="
+background:red;
+color:white;
+border:none;
+padding:8px;
+border-radius:6px;
+margin-bottom:10px;
+cursor:pointer;
+">
+🗑️ Clear Chat
+</button>
+
 <div id="chatBox" style="
 height:200px;
 overflow-y:auto;
@@ -133,6 +145,16 @@ window.clearOrders = function(){
 
   if(confirmClear){
     remove(ordersRef);
+  }
+}
+
+/* CLEAR CHAT */
+window.clearChat = function(){
+
+  let confirmClear = confirm("Clear all chat messages?");
+
+  if(confirmClear){
+    remove(chatRef);
   }
 }
 
