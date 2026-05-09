@@ -45,6 +45,18 @@ h1{
 
 <h1>👨‍💼 Koki Admin Dashboard</h1>
 
+<button onclick="clearOrders()" style="
+background:red;
+color:white;
+border:none;
+padding:10px;
+border-radius:8px;
+margin-bottom:15px;
+cursor:pointer;
+">
+🗑️ Clear All Orders
+</button>
+
 <div id="orders"></div>
 
 <script type="module">
@@ -54,10 +66,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import {
   getDatabase,
   ref,
-  onValue
+  onValue,
+  remove
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* REPLACE WITH YOUR FIREBASE CONFIG */
+/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCtfN07wHJaja2Sofz59qCdZ7nWFbiOWqE",
   authDomain: "koki-mzboot-zbta.firebaseapp.com",
@@ -72,6 +85,15 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const ordersRef = ref(db, "orders");
+
+window.clearOrders = function(){
+
+  let confirmClear = confirm("Delete all orders?");
+
+  if(confirmClear){
+    remove(ordersRef);
+  }
+}
 
 onValue(ordersRef, (snapshot) => {
 
